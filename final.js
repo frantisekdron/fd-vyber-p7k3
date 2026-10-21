@@ -12,13 +12,20 @@ const VARIANTS = [
   { id: 'E-02', layout: 'E', title: 'Osazení E', garden: 'Zahrada 02 · Přírodní zahrada',
     description: 'Tři patrové domy s dřevěným obkladem u společného příjezdu, koupací jezírko u prvního domu, skleník a velké přírodní jezírko v louce.' },
 ];
+// Domy ve variantě – jen náhled (bez stahování), ilustrační reference ze stejného 3D modelu jako vizualizace
+const HOUSES = {
+  'B-01': [{ t: 'B1', label: 'B1 · přízemní dům do L', info: 'cca 13 × 15 m · přízemní · bazén s pergolou' }],
+  'D-03': [{ t: 'D1', label: 'D1 · přízemní dům do L', info: 'cca 11 × 15 m · přízemní · bazén a skleník' },
+           { t: 'D2', label: 'D2 · přízemní dům', info: 'cca 8 × 11 m · přízemní' }],
+  'E-02': [{ t: 'E', label: 'E1–E3 · patrový dům (3× stejný typ)', info: 'cca 9 × 11 m · 2 podlaží · dřevěný obklad' }],
+};
 const KEY = 'pitkovice-final-vyjadreni-20261020';
 const byId = id => document.getElementById(id);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
 const state = { view: {}, before: {}, approvals: {}, cards: {} };
 function load() { try { state.approvals = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { state.approvals = {}; } }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state.approvals)); } catch { /* bez úložiště stránka funguje dál */ } }
-const IMG_V = '7';   // zvýšit při výměně obrázků (prohlížeč jinak drží starý obrázek až 10 min)
+const IMG_V = '8';   // zvýšit při výměně obrázků (prohlížeč jinak drží starý obrázek až 10 min)
 const src = (v, w) => (state.before[v.id] ? `final/pred-${state.view[v.id]}-${w}.jpg` : `final/${v.id}-${state.view[v.id]}-${w}.jpg`) + `?v=${IMG_V}`;
 const viewLabel = id => VIEWS.find(x => x.id === id)?.label || '';
 
@@ -73,7 +80,19 @@ function buildCard(v) {
   const clear = el('button', 'text-button approval-clear', 'Zrušit moje vyjádření'); clear.type = 'button';
   clear.addEventListener('click', () => { delete state.approvals[v.id]; note.value = ''; save(); msg.textContent = `Vyjádření k variantě ${v.layout} je zrušené.`; update(v); updateSummary(); });
   actions.append(ok, change); box.append(label, note, actions, clear, msg);
-  card.append(head, el('p', 'final-desc', v.description), tabs, fig, box);
+  const houses = el('div', 'final-houses');
+  houses.append(el('p', 'final-houses-title', HOUSES[v.id].length > 1 ? 'Domy ve variantě' : 'Dům ve variantě'));
+  const hl = el('div', 'final-houses-list');
+  for (const h of HOUSES[v.id]) {
+    const b = el('button', 'house-thumb'); b.type = 'button'; b.setAttribute('aria-label', `Zvětšit náhled · ${h.label}`);
+    const im = document.createElement('img'); im.src = `final/dum-${h.t}-600.jpg?v=${IMG_V}`; im.alt = h.label; im.loading = 'lazy'; im.decoding = 'async';
+    const tx = el('span', 'house-text'); tx.append(el('strong', '', h.label), el('span', '', h.info));
+    b.append(im, tx); b.addEventListener('click', () => openLightbox(`final/dum-${h.t}-1200.jpg?v=${IMG_V}`, h.label));
+    b.addEventListener('contextmenu', e => e.preventDefault());
+    hl.append(b);
+  }
+  houses.append(hl, el('p', 'final-houses-note', 'Ilustrační náhled domu ze stejného 3D modelu jako vizualizace. Podobu domu určí projekt.'));
+  card.append(head, el('p', 'final-desc', v.description), tabs, fig, houses, box);
   state.cards[v.id] = { card, status, viewButtons, img, bA, bB, cap, ok, change, clear, msg, note };
   return card;
 }
