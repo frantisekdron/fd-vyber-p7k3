@@ -1,10 +1,8 @@
 // Finální vizualizace B · D · E – statická verze (GitHub Pages). Vyjádření se ukládá jen v prohlížeči
 // a klientka ho odešle zprávou (sdílení / zkopírování). Žádný server, žádné osobní údaje.
 const VIEWS = [
-  { id: '0095', label: 'Hlavní pohled od jihozápadu' },
-  { id: '0131', label: 'Od ulice' },
-  { id: '0136', label: 'Od severovýchodu' },
   { id: 'shora', label: 'Pohled shora' },
+  { id: '0095', label: 'Hlavní pohled od jihozápadu' },
 ];
 const VARIANTS = [
   { id: 'B-01', layout: 'B', title: 'Osazení B', garden: 'Zahrada 01 · Rodinná zahrada s bazénem a jezírkem',
