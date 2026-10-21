@@ -18,7 +18,7 @@ const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls)
 const state = { view: {}, before: {}, approvals: {}, cards: {} };
 function load() { try { state.approvals = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { state.approvals = {}; } }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state.approvals)); } catch { /* bez úložiště stránka funguje dál */ } }
-const IMG_V = '5';   // zvýšit při výměně obrázků (prohlížeč jinak drží starý obrázek až 10 min)
+const IMG_V = '6';   // zvýšit při výměně obrázků (prohlížeč jinak drží starý obrázek až 10 min)
 const src = (v, w) => (state.before[v.id] ? `final/pred-${state.view[v.id]}-${w}.jpg` : `final/${v.id}-${state.view[v.id]}-${w}.jpg`) + `?v=${IMG_V}`;
 const viewLabel = id => VIEWS.find(x => x.id === id)?.label || '';
 
